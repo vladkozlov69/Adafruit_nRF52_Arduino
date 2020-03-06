@@ -55,13 +55,15 @@ BLEScanner::BLEScanner(void)
   _stop_cb             = NULL;
 
   _param  = ((ble_gap_scan_params_t) {
-    // TODO Extended Adv on secondary channels
-    .extended               = 0,
+     // TODO Extended Adv on secondary channels
+    // .extended               = 0,
+    .extended               = 1,
     .report_incomplete_evts = 0,
 
-    .active         = 0,
+    .active         = 1,
     .filter_policy  = BLE_GAP_SCAN_FP_ACCEPT_ALL,
-    .scan_phys      = BLE_GAP_PHY_AUTO,
+    .scan_phys      = BLE_GAP_PHY_CODED,
+    // .scan_phys      = BLE_GAP_PHY_AUTO,
 
     .interval       = BLE_SCAN_INTERVAL_DFLT,
     .window         = BLE_SCAN_WINDOW_DFLT,
@@ -115,13 +117,16 @@ ble_gap_scan_params_t* BLEScanner::getParams(void)
 bool BLEScanner::start(uint16_t timeout)
 {
   _report_data.p_data  = _scan_data;
-  _report_data.len     = BLE_GAP_SCAN_BUFFER_MAX;
+  // _report_data.len     = BLE_GAP_SCAN_BUFFER_MAX;
+  _report_data.len     = BLE_GAP_SCAN_BUFFER_EXTENDED_MIN;
 
   _param.timeout = timeout;
 
-  VERIFY_STATUS( sd_ble_gap_scan_start(&_param, &_report_data), false );
+  uint32_t ret= sd_ble_gap_scan_start(&_param, &_report_data);
 
-  Bluefruit._startConnLed(); // start blinking
+  VERIFY_STATUS( ret, false );
+
+  // Bluefruit._startConnLed(); // start blinking
   _runnning = true;
 
   return true;

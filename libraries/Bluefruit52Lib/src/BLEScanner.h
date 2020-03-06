@@ -97,7 +97,8 @@ public:
   void _eventHandler(ble_evt_t* evt);
 
 private:
-  uint8_t    _scan_data[BLE_GAP_SCAN_BUFFER_MAX];
+  uint8_t    _scan_data[BLE_GAP_SCAN_BUFFER_EXTENDED_MIN];
+  // uint8_t    _scan_data[BLE_GAP_SCAN_BUFFER_MAX];
   ble_data_t _report_data;
 
   uint32_t   _conn_mask;
