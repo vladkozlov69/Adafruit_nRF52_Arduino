@@ -25,6 +25,7 @@
 
 const uint32_t g_ADigitalPinMap[] =
 {
+  0, // zero pin is dummy here
   1,  // P0.01
   2,  // P0.02
   3,  // P0.03
