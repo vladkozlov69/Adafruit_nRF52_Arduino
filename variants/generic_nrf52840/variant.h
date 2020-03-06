@@ -67,8 +67,8 @@ static const uint8_t A7  = PIN_A7 ;
 #define PIN_SERIAL1_RX (-1)
 #define PIN_SERIAL1_TX (-1)
 
-#define LED_BLUE 24
-#define LED_BUILTIN 22
+#define LED_BLUE 7
+#define LED_BUILTIN 6
 #define LED_STATE_ON         0
 
 #ifdef __cplusplus
