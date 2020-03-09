@@ -77,6 +77,8 @@ public:
   bool resume(void);
   bool stop(void);
 
+  void setLongRange(bool enable);
+
   /*------------- Callbacks -------------*/
   void setRxCallback(rx_callback_t fp);
   void setStopCallback(stop_callback_t fp);
