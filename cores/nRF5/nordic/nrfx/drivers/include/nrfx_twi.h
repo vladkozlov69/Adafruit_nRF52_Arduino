@@ -1,38 +1,48 @@
-/*
+/**
  * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+ *
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form, except as embedded into a Nordic
+ *    Semiconductor ASA integrated circuit in a product or a software update for
+ *    such product, must reproduce the above copyright notice, this list of
+ *    conditions and the following disclaimer in the documentation and/or other
+ *    materials provided with the distribution.
  *
- * 3. Neither the name of the copyright holder nor the names of its
+ * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * 4. This software, with or without modification, must only be used with a
+ *    Nordic Semiconductor ASA integrated circuit.
+ *
+ * 5. Any software provided in binary form under this license must not be reverse
+ *    engineered, decompiled, modified and/or disassembled.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #ifndef NRFX_TWI_H__
 #define NRFX_TWI_H__
 
 #include <nrfx.h>
+#include <nrfx_twi_twim.h>
 #include <hal/nrf_twi.h>
 
 #ifdef __cplusplus
@@ -106,7 +116,8 @@ typedef enum
 {
     NRFX_TWI_EVT_DONE,         ///< Transfer completed event.
     NRFX_TWI_EVT_ADDRESS_NACK, ///< Error event: NACK received after sending the address.
-    NRFX_TWI_EVT_DATA_NACK     ///< Error event: NACK received after sending a data byte.
+    NRFX_TWI_EVT_DATA_NACK,    ///< Error event: NACK received after sending a data byte.
+    NRFX_TWI_EVT_OVERRUN       ///< Error event: The unread data is replaced by new data.
 } nrfx_twi_evt_type_t;
 
 /** @brief TWI master driver transfer types. */
@@ -356,6 +367,30 @@ size_t nrfx_twi_data_count_get(nrfx_twi_t const * const p_instance);
  * @return STOPPED event address.
  */
 uint32_t nrfx_twi_stopped_event_get(nrfx_twi_t const * p_instance);
+
+/**
+ * @brief Function for recovering the bus.
+ *
+ * This function checks if the bus is not stuck because of a slave holding the SDA line in the low state,
+ * and if needed it performs required number of pulses on the SCL line to make the slave release the SDA line.
+ * Finally, the function generates a STOP condition on the bus to put it into a known state.
+ *
+ * @note This function can be used only if the TWI driver is uninitialized.
+ *
+ * @param[in] scl_pin SCL pin number.
+ * @param[in] sda_pin SDA pin number.
+ *
+ * @retval NRFX_SUCCESS        Bus recovery was successful.
+ * @retval NRFX_ERROR_INTERNAL Bus recovery failed.
+ */
+__STATIC_INLINE nrfx_err_t nrfx_twi_bus_recover(uint32_t scl_pin, uint32_t sda_pin);
+
+#ifndef SUPPRESS_INLINE_IMPLEMENTATION
+__STATIC_INLINE nrfx_err_t nrfx_twi_bus_recover(uint32_t scl_pin, uint32_t sda_pin)
+{
+    return nrfx_twi_twim_bus_recover(scl_pin, sda_pin);
+}
+#endif
 
 /** @} */
 
