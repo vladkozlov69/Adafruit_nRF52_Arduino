@@ -1,32 +1,41 @@
-/*
+/**
  * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+ *
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form, except as embedded into a Nordic
+ *    Semiconductor ASA integrated circuit in a product or a software update for
+ *    such product, must reproduce the above copyright notice, this list of
+ *    conditions and the following disclaimer in the documentation and/or other
+ *    materials provided with the distribution.
  *
- * 3. Neither the name of the copyright holder nor the names of its
+ * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * 4. This software, with or without modification, must only be used with a
+ *    Nordic Semiconductor ASA integrated circuit.
+ *
+ * 5. Any software provided in binary form under this license must not be reverse
+ *    engineered, decompiled, modified and/or disassembled.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #ifndef NRF_I2S_H__
@@ -111,7 +120,9 @@ typedef enum
     NRF_I2S_MCK_32MDIV16  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV16,     ///< 32 MHz / 16 = 2.0 MHz.
     NRF_I2S_MCK_32MDIV21  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV21,     ///< 32 MHz / 21 = 1.5238095 MHz.
     NRF_I2S_MCK_32MDIV23  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV23,     ///< 32 MHz / 23 = 1.3913043 MHz.
+    NRF_I2S_MCK_32MDIV30  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV30,     ///< 32 MHz / 30 = 1.0666667 MHz.
     NRF_I2S_MCK_32MDIV31  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV31,     ///< 32 MHz / 31 = 1.0322581 MHz.
+    NRF_I2S_MCK_32MDIV32  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV32,     ///< 32 MHz / 32 = 1.0 MHz.
     NRF_I2S_MCK_32MDIV42  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV42,     ///< 32 MHz / 42 = 0.7619048 MHz.
     NRF_I2S_MCK_32MDIV63  = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV63,     ///< 32 MHz / 63 = 0.5079365 MHz.
     NRF_I2S_MCK_32MDIV125 = I2S_CONFIG_MCKFREQ_MCKFREQ_32MDIV125     ///< 32 MHz / 125 = 0.256 MHz.

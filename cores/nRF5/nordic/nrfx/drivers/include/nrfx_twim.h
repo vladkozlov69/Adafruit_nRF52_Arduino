@@ -1,38 +1,48 @@
-/*
+/**
  * Copyright (c) 2015 - 2019, Nordic Semiconductor ASA
+ *
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * Redistribution and use in source and binary forms, with or without modification,
+ * are permitted provided that the following conditions are met:
  *
  * 1. Redistributions of source code must retain the above copyright notice, this
  *    list of conditions and the following disclaimer.
  *
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
+ * 2. Redistributions in binary form, except as embedded into a Nordic
+ *    Semiconductor ASA integrated circuit in a product or a software update for
+ *    such product, must reproduce the above copyright notice, this list of
+ *    conditions and the following disclaimer in the documentation and/or other
+ *    materials provided with the distribution.
  *
- * 3. Neither the name of the copyright holder nor the names of its
+ * 3. Neither the name of Nordic Semiconductor ASA nor the names of its
  *    contributors may be used to endorse or promote products derived from this
  *    software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+ * 4. This software, with or without modification, must only be used with a
+ *    Nordic Semiconductor ASA integrated circuit.
+ *
+ * 5. Any software provided in binary form under this license must not be reverse
+ *    engineered, decompiled, modified and/or disassembled.
+ *
+ * THIS SOFTWARE IS PROVIDED BY NORDIC SEMICONDUCTOR ASA "AS IS" AND ANY EXPRESS
+ * OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
+ * OF MERCHANTABILITY, NONINFRINGEMENT, AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL NORDIC SEMICONDUCTOR ASA OR CONTRIBUTORS BE
  * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE
+ * GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT
+ * OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 
 #ifndef NRFX_TWIM_H__
 #define NRFX_TWIM_H__
 
 #include <nrfx.h>
+#include <nrfx_twi_twim.h>
 #include <hal/nrf_twim.h>
 
 #ifdef __cplusplus
@@ -116,7 +126,9 @@ typedef enum
 {
     NRFX_TWIM_EVT_DONE,         ///< Transfer completed event.
     NRFX_TWIM_EVT_ADDRESS_NACK, ///< Error event: NACK received after sending the address.
-    NRFX_TWIM_EVT_DATA_NACK     ///< Error event: NACK received after sending a data byte.
+    NRFX_TWIM_EVT_DATA_NACK,    ///< Error event: NACK received after sending a data byte.
+    NRFX_TWIM_EVT_OVERRUN,      ///< Error event: The unread data is replaced by new data.
+    NRFX_TWIM_EVT_BUS_ERROR     ///< Error event: An unexpected transition occurred on the bus.
 } nrfx_twim_evt_type_t;
 
 /** @brief TWI master driver transfer types. */
@@ -261,7 +273,7 @@ void nrfx_twim_disable(nrfx_twim_t const * p_instance);
  *
  * @retval NRFX_SUCCESS                 The procedure is successful.
  * @retval NRFX_ERROR_BUSY              The driver is not ready for a new transfer.
- * @retval NRFX_ERROR_INTERNAL          Error is detected by hardware.
+ * @retval NRFX_ERROR_INTERNAL          An unexpected transition occurred on the bus.
  * @retval NRFX_ERROR_INVALID_ADDR      The provided buffer is not placed in the Data RAM region.
  * @retval NRFX_ERROR_DRV_TWI_ERR_ANACK NACK is received after sending the address in polling mode.
  * @retval NRFX_ERROR_DRV_TWI_ERR_DNACK NACK is received after sending a data byte in polling mode.
@@ -288,11 +300,12 @@ nrfx_err_t nrfx_twim_tx(nrfx_twim_t const * p_instance,
  *                       description in the Product Specification). The driver
  *                       checks it with assertion.
  *
- * @retval NRFX_SUCCESS                 The procedure is successful.
- * @retval NRFX_ERROR_BUSY              The driver is not ready for a new transfer.
- * @retval NRFX_ERROR_INTERNAL          Error is detected by hardware.
- * @retval NRFX_ERROR_DRV_TWI_ERR_ANACK NACK is received after sending the address in polling mode.
- * @retval NRFX_ERROR_DRV_TWI_ERR_DNACK NACK is received after sending a data byte in polling mode.
+ * @retval NRFX_SUCCESS                   The procedure is successful.
+ * @retval NRFX_ERROR_BUSY                The driver is not ready for a new transfer.
+ * @retval NRFX_ERROR_INTERNAL            An unexpected transition occurred on the bus.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_OVERRUN The unread data is replaced by new data.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_ANACK   NACK is received after sending the address in polling mode.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_DNACK   NACK is received after sending a data byte in polling mode.
  */
 nrfx_err_t nrfx_twim_rx(nrfx_twim_t const * p_instance,
                         uint8_t             address,
@@ -341,13 +354,14 @@ nrfx_err_t nrfx_twim_rx(nrfx_twim_t const * p_instance,
  * @param[in] p_xfer_desc Pointer to the transfer descriptor.
  * @param[in] flags       Transfer options (0 for default settings).
  *
- * @retval NRFX_SUCCESS                 The procedure is successful.
- * @retval NRFX_ERROR_BUSY              The driver is not ready for a new transfer.
- * @retval NRFX_ERROR_NOT_SUPPORTED     The provided parameters are not supported.
- * @retval NRFX_ERROR_INTERNAL          Error is detected by hardware.
- * @retval NRFX_ERROR_INVALID_ADDR      The provided buffers are not placed in the Data RAM region.
- * @retval NRFX_ERROR_DRV_TWI_ERR_ANACK NACK is received after sending the address.
- * @retval NRFX_ERROR_DRV_TWI_ERR_DNACK NACK is received after sending a data byte.
+ * @retval NRFX_SUCCESS                   The procedure is successful.
+ * @retval NRFX_ERROR_BUSY                The driver is not ready for a new transfer.
+ * @retval NRFX_ERROR_NOT_SUPPORTED       The provided parameters are not supported.
+ * @retval NRFX_ERROR_INTERNAL            An unexpected transition occurred on the bus.
+ * @retval NRFX_ERROR_INVALID_ADDR        The provided buffers are not placed in the Data RAM region.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_OVERRUN The unread data is replaced by new data.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_ANACK   NACK is received after sending the address.
+ * @retval NRFX_ERROR_DRV_TWI_ERR_DNACK   NACK is received after sending a data byte.
  */
 nrfx_err_t nrfx_twim_xfer(nrfx_twim_t           const * p_instance,
                           nrfx_twim_xfer_desc_t const * p_xfer_desc,
@@ -388,6 +402,30 @@ uint32_t nrfx_twim_start_task_get(nrfx_twim_t const * p_instance, nrfx_twim_xfer
  * @return STOPPED event address.
  */
 uint32_t nrfx_twim_stopped_event_get(nrfx_twim_t const * p_instance);
+
+/**
+ * @brief Function for recovering the bus.
+ *
+ * This function checks if the bus is not stuck because of a slave holding the SDA line in the low state,
+ * and if needed it performs required number of pulses on the SCL line to make the slave release the SDA line.
+ * Finally, the function generates a STOP condition on the bus to put it into a known state.
+ *
+ * @note This function can be used only if the TWIM driver is uninitialized.
+ *
+ * @param[in] scl_pin SCL pin number.
+ * @param[in] sda_pin SDA pin number.
+ *
+ * @retval NRFX_SUCCESS        Bus recovery was successful.
+ * @retval NRFX_ERROR_INTERNAL Bus recovery failed.
+ */
+__STATIC_INLINE nrfx_err_t nrfx_twim_bus_recover(uint32_t scl_pin, uint32_t sda_pin);
+
+#ifndef SUPPRESS_INLINE_IMPLEMENTATION
+__STATIC_INLINE nrfx_err_t nrfx_twim_bus_recover(uint32_t scl_pin, uint32_t sda_pin)
+{
+    return nrfx_twi_twim_bus_recover(scl_pin, sda_pin);
+}
+#endif
 
 /** @} */
 
