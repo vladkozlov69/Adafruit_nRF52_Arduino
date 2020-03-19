@@ -151,7 +151,13 @@ AdafruitBluefruit::AdafruitBluefruit(void)
   _sd_cfg.prph.wrcmd_qsize = BLE_GATTC_WRITE_CMD_TX_QUEUE_SIZE_DEFAULT;
 
   _sd_cfg.central.mtu_max     = BLE_GATT_ATT_MTU_DEFAULT;
+
+#ifdef NRF52840_XXAA
   _sd_cfg.central.event_len   = BLE_GAP_EVENT_LENGTH_CODED_PHY_MIN * 2;
+#else
+  _sd_cfg.central.event_len   = BLE_GAP_EVENT_LENGTH_DEFAULT;
+#endif
+
   _sd_cfg.central.hvn_qsize   = BLE_GATTS_HVN_TX_QUEUE_SIZE_DEFAULT;
   _sd_cfg.central.wrcmd_qsize = BLE_GATTC_WRITE_CMD_TX_QUEUE_SIZE_DEFAULT;
 
