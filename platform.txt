@@ -79,10 +79,10 @@ compiler.elf2hex.extra_flags=
 # ----------------
 
 ## Compile c files
-recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} -DARDUINO_BSP_VERSION="{version}" {compiler.c.extra_flags} {build.extra_flags} {build.flags.nrf} {includes} "{source_file}" -o "{object_file}"
+recipe.c.o.pattern="{compiler.path}{compiler.c.cmd}" {compiler.c.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} '-DARDUINO_BSP_VERSION="{version}"' {compiler.c.extra_flags} {build.extra_flags} {build.flags.nrf} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile c++ files
-recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} -DARDUINO_BSP_VERSION="{version}" {compiler.cpp.extra_flags} {build.extra_flags} {build.flags.nrf} {includes} "{source_file}" -o "{object_file}"
+recipe.cpp.o.pattern="{compiler.path}{compiler.cpp.cmd}" {compiler.cpp.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} '-DARDUINO_BSP_VERSION="{version}"' {compiler.cpp.extra_flags} {build.extra_flags} {build.flags.nrf} {includes} "{source_file}" -o "{object_file}"
 
 ## Compile S files
 recipe.S.o.pattern="{compiler.path}{compiler.S.cmd}" {compiler.S.flags} -DF_CPU={build.f_cpu} -DARDUINO={runtime.ide.version} -DARDUINO_{build.board} -DARDUINO_ARCH_{build.arch} {compiler.S.extra_flags} {build.extra_flags} {build.flags.nrf} {includes} "{source_file}" -o "{object_file}"
@@ -115,8 +115,8 @@ recipe.output.save_file_hexu={build.project_name}.save.hex
 
 ## Compute size
 recipe.size.pattern="{compiler.path}{compiler.size.cmd}" -A "{build.path}/{build.project_name}.elf"
-recipe.size.regex=\.text\s+([0-9]+).*
-recipe.size.regex.data=(\.data|\.bss|\.stack)\s+([0-9]+).*
+recipe.size.regex=^(?:\.text|\.data|)\s+([0-9]+).*
+recipe.size.regex.data=^(?:\.data|\.bss)\s+([0-9]+).*
 
 ## Export Compiled Binary
 recipe.output.tmp_file={build.project_name}.hex
