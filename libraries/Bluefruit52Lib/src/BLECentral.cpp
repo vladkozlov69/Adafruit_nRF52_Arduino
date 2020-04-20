@@ -75,7 +75,9 @@ bool BLECentral::setConnIntervalMS (uint16_t min_ms, uint16_t max_ms)
 bool BLECentral::connect(const ble_gap_addr_t* peer_addr)
 {
   // Connect with default connection parameter
-  VERIFY_STATUS( sd_ble_gap_connect(peer_addr, Bluefruit.Scanner.getParams(), &_conn_param, CONN_CFG_CENTRAL), false );
+  uint32_t ret = sd_ble_gap_connect(peer_addr, Bluefruit.Scanner.getParams(), &_conn_param, CONN_CFG_CENTRAL);
+
+  VERIFY_STATUS(ret, false );
 
   return true;
 }

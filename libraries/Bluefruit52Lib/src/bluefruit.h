@@ -170,6 +170,8 @@ class AdafruitBluefruit
     uint16_t connHandle        (void);
     bool     connPaired        (uint16_t conn_hdl);
 
+    bool     setLongRange      (bool enable);
+
     // Alias to BLEConnection API()
     bool     disconnect        (uint16_t conn_hdl);
     bool     requestPairing    (uint16_t conn_hdl);
@@ -217,6 +219,8 @@ class AdafruitBluefruit
     uint8_t _central_count;
 
     int8_t _tx_power;
+
+    uint32_t _ram_start;
 
     ble_gap_sec_params_t _sec_param;
 

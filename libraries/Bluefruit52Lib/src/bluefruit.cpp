@@ -151,7 +151,13 @@ AdafruitBluefruit::AdafruitBluefruit(void)
   _sd_cfg.prph.wrcmd_qsize = BLE_GATTC_WRITE_CMD_TX_QUEUE_SIZE_DEFAULT;
 
   _sd_cfg.central.mtu_max     = BLE_GATT_ATT_MTU_DEFAULT;
+
+#ifdef NRF52840_XXAA
+  _sd_cfg.central.event_len   = BLE_GAP_EVENT_LENGTH_CODED_PHY_MIN * 2;
+#else
   _sd_cfg.central.event_len   = BLE_GAP_EVENT_LENGTH_DEFAULT;
+#endif
+
   _sd_cfg.central.hvn_qsize   = BLE_GATTS_HVN_TX_QUEUE_SIZE_DEFAULT;
   _sd_cfg.central.wrcmd_qsize = BLE_GATTC_WRITE_CMD_TX_QUEUE_SIZE_DEFAULT;
 
@@ -339,6 +345,8 @@ bool AdafruitBluefruit::begin(uint8_t prph_count, uint8_t central_count)
   /*------------- Configure BLE params  -------------*/
   extern uint32_t  __data_start__[]; // defined in linker
   uint32_t ram_start = (uint32_t) __data_start__;
+
+  _ram_start = ram_start;
 
   ble_cfg_t blecfg;
 
@@ -632,6 +640,13 @@ bool AdafruitBluefruit::connPaired(uint16_t conn_hdl)
 {
   BLEConnection* conn = Bluefruit.Connection(conn_hdl);
   return conn && conn->paired();
+}
+
+bool AdafruitBluefruit::setLongRange(bool enable)
+{
+  Scanner.setLongRange(enable);
+
+  return true;
 }
 
 uint16_t AdafruitBluefruit::getMaxMtu(uint8_t role)
