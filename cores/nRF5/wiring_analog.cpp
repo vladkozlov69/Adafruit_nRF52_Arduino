@@ -36,6 +36,7 @@
 
 #include "Arduino.h"
 
+
 /* Implement analogWrite() and analogWriteResolution() using
  * HardwarePWM.
  *
@@ -45,14 +46,27 @@
 extern "C"
 {
 
+enum
+{
+  ANALOG_TOKEN = 0x676f6c41 // 'A' 'l' 'o' 'g'
+};
+
+static uint8_t _analogResolution = 8; // default is 256 levels
+
 /**
- * This will apply to all PWM Hardware
+ * This will apply to all PWM Hardware currently used by analogWrite(),
+ * and automatically apply to future calls to analogWrite().
  */
 void analogWriteResolution( uint8_t res )
 {
+  // save the resolution for when adding a new instance
+  _analogResolution = res;
   for (int i = 0; i<HWPWM_MODULE_NUM; i++)
   {
-    HwPWMx[i]->setResolution(res);
+    if (HwPWMx[i]->isOwner(ANALOG_TOKEN))
+    {
+      HwPWMx[i]->setResolution(res);
+    }
   }
 }
 
@@ -65,17 +79,50 @@ void analogWriteResolution( uint8_t res )
  */
 void analogWrite( uint32_t pin, uint32_t value )
 {
+  // first, handle the case where the pin is already in use by analogWrite()
   for(int i=0; i<HWPWM_MODULE_NUM; i++)
   {
-    // Added by if needed
-    if ( HwPWMx[i]->addPin(pin) )
+    if (HwPWMx[i]->isOwner(ANALOG_TOKEN))
     {
+      int const ch = HwPWMx[i]->pin2channel(pin);
+      if (ch >= 0)
+      {
+        HwPWMx[i]->writeChannel(ch, value);
+        return;
+      }
+    }
+  }
+
+  // Next, handle the case where can add the pin to a PWM instance already owned by analogWrite()
+  for(int i=0; i<HWPWM_MODULE_NUM; i++)
+  {
+    if ( HwPWMx[i]->isOwner(ANALOG_TOKEN) && HwPWMx[i]->addPin(pin) )
+    {
+      // successfully added the pin, so write the value also
       HwPWMx[i]->writePin(pin, value);
+      LOG_LV2("Analog", "Added pin %" PRIu32 " to already-owned PWM %d", pin, i);
       return;
     }
   }
+
+  // Attempt to acquire a new HwPWMx instance ... but only where
+  // 1. it's not one already used for analog, and
+  // 2. it currently has no pins in use.
+  for(int i=0; i<HWPWM_MODULE_NUM; i++)
+  {
+    if (HwPWMx[i]->takeOwnership(ANALOG_TOKEN))
+    {
+      // apply the cached analog resolution to newly owned instances
+      HwPWMx[i]->setResolution(_analogResolution);
+      HwPWMx[i]->addPin(pin);
+      HwPWMx[i]->writePin(pin, value);
+      LOG_LV2("Analog", "took ownership of, and added pin %" PRIu32 " to, PWM %d", pin, i);
+      return;
+    }
+  }
+
+  LOG_LV1("Analog", "Unable to find a free PWM peripheral");
+  return;
 }
 
-}
-
-
+} // end extern "C"
